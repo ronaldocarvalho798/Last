@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metáfora do Mar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Dancing Script", cursive;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        color: aliceblue;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .page-bg video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        min-height: 100%;
+        min-width: 100%;
+      }
+
+      .sob {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+        min-height: 100%;
+        min-width: 100%;
+        background: rgba(0, 0, 0, 0);
+        transition: background 0.3s ease;
+      }
+
+      .text-container {
+        position: relative;
+        height: 100vh;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+
+        /* Esconder a barra de rolagem mas manter a funcionalidade */
+        /* Para Firefox */
+        scrollbar-width: none;
+      }
+
+      .text {
+        text-align: left;
+        font-size: 28px;
+        margin-top: 30px;
+        padding: 3rem 16rem 6rem 16rem;
+        line-height: 1.6;
+        opacity: 0;
+        transition: 3s ease-in-out;
+        transition-delay: 2s;
+      }
+
+      .text h1 {
+        text-align: center;
+        margin-top: 0;
+      }
+
+      #txt.show {
+        opacity: 1;
+      }
+
+      /* Estilos para o botão de som */
+      .sound-control {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 20;
+        transition: background-color 0.3s;
+        opacity: 0;
+        transition: 3s ease-in-out;
+        transition-delay: 2s;
+      }
+
+      .sound-control.show {
+        opacity: 1;
+      }
+
+      .sound-control:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+      }
+
+      .sound-control svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+      }
+
+      ::-webkit-scrollbar {
+        width: 0.4rem;
+      }
+
+      ::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #0a93bb;
+        border-radius: 0rem;
+      }
+
+      /* Novo elemento: Caminho dos personagens */
+      .caminho-jornada {
+        position: fixed;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 70vh;
+        width: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        z-index: 20;
+        opacity: 0;
+        transition: 3s ease-in-out;
+        transition-delay: 2s;
+      }
+
+      .progresso-caminho {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: linear-gradient(to top, #0a93bb, #6ad0ff);
+        border-radius: 3px;
+        height: 0%;
+        transition: height 0.3s ease;
+      }
+
+      .caminho-jornada.show {
+        opacity: 1;
+      }
+
+      .ponto-jornada {
+        position: absolute;
+        left: -7px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #0a93bb;
+        transform: scale(0);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        z-index: 21;
+      }
+
+      .ponto-jornada.ativo {
+        transform: scale(1);
+        box-shadow: 0 0 15px 5px rgba(10, 147, 187, 0.6);
+      }
+
+      .ponto-1 {
+        bottom: 3%;
+      }
+
+      .ponto-2 {
+        bottom: 33%;
+      }
+
+      .ponto-3 {
+        bottom: 66%;
+      }
+
+      .efeito-ponto {
+        position: absolute;
+        left: 40px;
+        bottom: -20px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        overflow: hidden;
+        height: 80px;
+        width: 150px;
+        pointer-events: none;
+        border: none;
+      }
+
+      .efeito-ponto video,
+      .efeito-ponto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+
+      .ponto-jornada.ativo .efeito-ponto {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* Efeito de ondas na água para cada ponto do caminho */
+      .onda-agua {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 10px;
+        left: 10px;
+        border-radius: 50%;
+        background: rgba(10, 147, 187, 0.4);
+        transform: translate(-50%, -50%) scale(0);
+        animation: ondulacao 2s infinite;
+        z-index: 19;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      @keyframes ondulacao {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(3);
+          opacity: 0;
+        }
+      }
+
+      .contain {
+        display: flex;
+        justify-content: space-between;
+        gap: 10rem;
+        align-items: center;
+        margin-bottom: 5rem;
+        margin-top: 5rem;
+      }
+
+      .reverse {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        gap: 10rem;
+        align-items: center;
+        margin-bottom: 5rem;
+        margin-top: 5rem;
+      }
+
+      h1 {
+        font-size: 5.5rem;
+      }
+
+      h2 {
+        font-size: 56px;
+        font-weight: 100;
+      }
+
+      .alicia {
+        display: flex;
+        flex-direction: column;
+      }
+
+      img {
+        height: 200px;
+      }
+
+      .autoShow {
+        animation: autoShowAnimation both;
+        animation-timeline: view(70% 5%);
+      }
+
+      .autoShowRight {
+        animation: autoShowAnimationRight both;
+        animation-timeline: view(70% 5%);
+      }
+
+      @keyframes autoShowAnimation {
+        from {
+          opacity: 0;
+          transform: translateX(-200px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes autoShowAnimationRight {
+        from {
+          opacity: 0;
+          transform: translateX(200px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .intro {
+        position: fixed;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        z-index: 25;
+        /* Importante: incluir transform na transição */
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+      }
+
+      .btn-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 26;
+      }
+
+      .dive-button.remove {
+        opacity: 0;
+        transform: scale(2.5); /* Agora será animado progressivamente */
+        pointer-events: none;
+      }
+
+      .intro.remove {
+        opacity: 0;
+        transform: scale(2.5); /* Agora será animado progressivamente */
+        pointer-events: none;
+      }
+
+      /* Estilo base para o botão */
+      .dive-button {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-size: 18px;
+        font-weight: lighter;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-family: "Arial", sans-serif;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        transition: 0.4s ease-in-out;
+        animation: scal 2.5s infinite ease-in-out;
+      }
+
+      @keyframes scal {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Efeito hover - brilho e transformação */
+      .dive-button:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Efeito de onda para simulação de água */
+      .dive-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.7s ease;
+      }
+
+      .dive-button:hover::before {
+        left: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="intro"></div>
+    <div class="btn-container">
+      <button id="btn" class="dive-button" onclick="splitImage()">
+        DIVE IN
+      </button>
+    </div>
+
+    <audio id="newSound" loop>
+      <source
+        src="Yann Tiersen - Comptine d`un autre ete - l`apres-midi.mp3"
+        type="audio/mp3"
+      />
+    </audio>
+
+    <!-- Elemento de áudio -->
+    <audio id="backgroundAudio" loop>
+      <source src="ocean-waves-112906.mp3" type="audio/mp3" />
+    </audio>
+
+    <!-- Botão de controle de som -->
+    <div class="sound-control" id="soundToggle">
+      <!-- Ícone de som ligado -->
+      <svg
+        id="soundOnIcon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+        />
+      </svg>
+      <!-- Ícone de som desligado (inicialmente escondido) -->
+      <svg
+        id="soundOffIcon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        style="display: none"
+      >
+        <path
+          d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"
+        />
+      </svg>
+    </div>
+
+    <!-- Caminho da jornada com pontos interativos -->
+    <div class="caminho-jornada">
+      <div class="progresso-caminho" id="progressoCaminho"></div>
+
+      <div class="ponto-jornada ponto-1" id="ponto1">
+        <div class="efeito-ponto"><img src="inicio.jpg" alt="" /></div>
+        <div class="onda-agua" id="onda1"></div>
+      </div>
+
+      <div class="ponto-jornada ponto-2" id="ponto2">
+        <div class="efeito-ponto"><img src="meio.png" alt="" /></div>
+        <div class="onda-agua" id="onda2"></div>
+      </div>
+
+      <div class="ponto-jornada ponto-3" id="ponto3">
+        <div class="efeito-ponto"><img src="fim.jpg" alt="" /></div>
+        <div class="onda-agua" id="onda3"></div>
+      </div>
+    </div>
+
+    <div class="sob" id="overlay"></div>
+    <div class="page-bg">
+      <video
+        class="page-bg-desktop"
+        data-src="https://d1wy21vtjs6qq7.cloudfront.net/storyworks/specials/the-ocean-a-place-of-awe-mystery-and-allure/videos/ambient-background-d.mp4"
+        muted=""
+        loop=""
+        autoplay=""
+        playsinline=""
+        src="https://d1wy21vtjs6qq7.cloudfront.net/storyworks/specials/the-ocean-a-place-of-awe-mystery-and-allure/videos/ambient-background-d.mp4"
+      ></video>
+    </div>
+
+    <div class="text-container" id="textContainer">
+      <div id="txt" class="text">
+        <h1>Oceano</h1>
+        <p>
+          No começo, éramos apenas dois desconhecidos à beira do mar, sem saber
+          que aquela água nos chamaria. Você apareceu como uma onda inesperada
+          no meu dia, e eu, sem perceber, já estava pisando na areia molhada. A
+          princípio, era só um toque na superfície, uma conversa casual, como
+          alguém que apenas molha os pés sem intenção de nadar.
+        </p>
+        <br />
+        <p>
+          Mas então, algo nos puxou. Talvez fosse a maneira como seus olhos
+          refletiam um oceano profundo, escuro e cheio de histórias que ainda
+          não tinham sido contadas. Eu vi as tempestades que você enfrentou
+          antes de mim, vi as ondas que quebraram sobre você. E, em vez de me
+          afastar, mergulhei.
+        </p>
+        <div class="contain">
+          <div class="alicia autoShow">
+            <h2>Gift Bracelet</h2>
+            <p>
+              Nadamos juntos por muito tempo. Primeiro, águas calmas—noites de
+              conversa sob a luz da lua, promessas silenciosas ditas no toque
+              das mãos. Depois, correntes mais fortes—desejo, entrega, um quarto
+              de hotel com vista para o mar, onde as ondas contavam nossa
+              história sem que ninguém mais pudesse ouvir. Cada abraço era como
+              encontrar um recife escondido, um lar seguro dentro da imensidão.
+            </p>
+          </div>
+          <img class="autoShowRight" src="pulseiranew.png" />
+        </div>
+        <br />
+        <div class="reverse">
+          <div class="alicia autoShowRight">
+            <h2>Plush</h2>
+            <p>
+              Colecionamos lembranças como conchas na areia: pequenas vitórias
+              arrancadas de máquinas de pelúcia, momentos de pura alegria entre
+              um mergulho e outro. E mesmo nos dias difíceis, quando a maré
+              puxava forte, seguramos um ao outro, acreditando que podíamos
+              atravessar qualquer corrente.
+            </p>
+          </div>
+          <img class="autoShow" src="bearnew.png" />
+        </div>
+        <br />
+        <div class="contain">
+          <div class="alicia autoShow">
+            <h2>Celebration</h2>
+            <p>
+              Mas então, algo mudou. O mar começou a ficar agitado de um jeito
+              diferente. Você começou a se esconder, a deixar partes de si
+              submersas onde eu não conseguia mais alcançar. E eu, que antes
+              mergulhava fundo sem medo, comecei a sentir que estava sendo
+              arrastado para um lugar onde não havia mais ar. Foi aí que
+              percebi: não estávamos mais nadando juntos, estávamos nos afogando
+              um ao outro.
+            </p>
+          </div>
+          <img class="autoShowRight" src="diploma.png" alt="" />
+        </div>
+        <br />
+        <p>
+          O tempo passou, e agora estamos aqui—parados na beira desse mesmo mar.
+          Nossos eus do passado ainda estão lá dentro, segurando-se um ao outro,
+          sem perceber que precisam soltar para não se perderem. Eles merecem
+          descansar, merecem que os deixemos afundar suavemente, não como algo
+          que se perde, mas como algo que encontra seu próprio fundo, sua
+          própria paz.
+        </p>
+        <br />
+        <p>
+          Se continuarmos aqui, presos nessa maré sem decidir para onde ir, só
+          estaremos deixando o que foi bonito se tornar algo pesado, algo que um
+          dia foi um lar e agora parece uma âncora.
+        </p>
+        <br />
+        <p>
+          Talvez seja hora de dar um passo para trás, de olhar para o mar e
+          aceitar que a jornada foi real, foi intensa, foi nossa. Mas que agora,
+          para sermos justos com quem fomos, precisamos deixar que o oceano leve
+          nossas versões antigas para onde elas precisam ir.
+        </p>
+        <br />
+        <p>
+          E nós, quem sabe, possamos finalmente pisar em terra firme outra vez.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function splitImage() {
+        document.querySelector(".intro").classList.add("remove");
+        document.querySelector(".dive-button").classList.add("remove");
+        document.getElementById("txt").classList.add("show");
+        document.querySelector(".caminho-jornada").classList.add("show");
+        document.querySelector(".sound-control").classList.add("show");
+
+        // Iniciar os sons quando o botão DIVE IN for clicado
+        const audio = document.getElementById("backgroundAudio");
+        const newSound = document.getElementById("newSound");
+        const soundOnIcon = document.getElementById("soundOnIcon");
+        const soundOffIcon = document.getElementById("soundOffIcon");
+
+        // Configurar o volume
+        audio.volume = 0.3;
+        newSound.volume = 0.5;
+
+        // Tocar os sons
+        audio
+          .play()
+          .then(() => {
+            soundPlaying = true;
+            soundOnIcon.style.display = "block";
+            soundOffIcon.style.display = "none";
+          })
+          .catch((e) => console.log("Erro ao tocar áudio:", e));
+
+        newSound
+          .play()
+          .then(() => {
+            soundPlaying = true;
+            soundOnIcon.style.display = "block";
+            soundOffIcon.style.display = "none";
+          })
+          .catch((e) => console.log("Erro ao tocar áudio:", e));
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const textContainer = document.getElementById("textContainer");
+        const overlay = document.getElementById("overlay");
+        const audio = document.getElementById("backgroundAudio");
+        const newSound = document.getElementById("newSound");
+        const soundToggle = document.getElementById("soundToggle");
+        const soundOnIcon = document.getElementById("soundOnIcon");
+        const soundOffIcon = document.getElementById("soundOffIcon");
+
+        // Elementos do caminho da jornada
+        const progressoCaminho = document.getElementById("progressoCaminho");
+        const ponto1 = document.getElementById("ponto1");
+        const ponto2 = document.getElementById("ponto2");
+        const ponto3 = document.getElementById("ponto3");
+        const onda1 = document.getElementById("onda1");
+        const onda2 = document.getElementById("onda2");
+        const onda3 = document.getElementById("onda3");
+
+        let soundPlaying = false;
+
+        // Função para calcular a posição máxima de rolagem
+        const getMaxScroll = () =>
+          textContainer.scrollHeight - textContainer.clientHeight;
+
+        // Listener de rolagem para múltiplos efeitos
+        textContainer.addEventListener("scroll", function () {
+          // Calcula a porcentagem atual de rolagem
+          const scrollPercentage = textContainer.scrollTop / getMaxScroll();
+
+          // 1. Atualiza o overlay com base na rolagem
+          const opacity = Math.min(scrollPercentage * 0.8, 0.7);
+          overlay.style.background = `rgba(0, 0, 0, ${opacity})`;
+
+          // 2. Atualiza o progresso do caminho
+          progressoCaminho.style.height = `${scrollPercentage * 100}%`;
+
+          // 3. Ativa os pontos da jornada com base na rolagem
+          if (scrollPercentage >= 0.03) {
+            ponto1.classList.add("ativo");
+            onda1.style.opacity = "1";
+          } else {
+            ponto1.classList.remove("ativo");
+            onda1.style.opacity = "0";
+          }
+
+          if (scrollPercentage >= 0.33) {
+            ponto2.classList.add("ativo");
+            onda2.style.opacity = "1";
+          } else {
+            ponto2.classList.remove("ativo");
+            onda2.style.opacity = "0";
+          }
+
+          if (scrollPercentage >= 0.66) {
+            ponto3.classList.add("ativo");
+            onda3.style.opacity = "1";
+          } else {
+            ponto3.classList.remove("ativo");
+            onda3.style.opacity = "0";
+          }
+        });
+
+        // Controle de som
+        soundToggle.addEventListener("click", function () {
+          if (soundPlaying) {
+            audio.pause();
+            soundOnIcon.style.display = "none";
+            soundOffIcon.style.display = "block";
+          } else {
+            audio.play().catch((e) => console.log("Erro ao tocar áudio:", e));
+            soundOnIcon.style.display = "block";
+            soundOffIcon.style.display = "none";
+          }
+          soundPlaying = !soundPlaying;
+        });
+
+        // Removido o event listener para iniciar o som com qualquer clique na página
+      });
+
+      const video = document.getElementById("meuVideo");
+      const maxLoops = 3;
+
+      for (let i = 0; i < maxLoops; i++) {
+        video.addEventListener(
+          "ended",
+          () => {
+            video.currentTime = 0;
+            video.play();
+          },
+          { once: true }
+        );
+      }
+    </script>
+  </body>
+</html>
