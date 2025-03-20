@@ -244,7 +244,7 @@
       }
 
       .ponto-1 {
-        bottom: 3%;
+        bottom: 1%;
       }
 
       .ponto-2 {
@@ -253,6 +253,10 @@
 
       .ponto-3 {
         bottom: 66%;
+      }
+
+      .ponto-4 {
+        bottom: 99%;
       }
 
       .efeito-ponto {
@@ -557,6 +561,10 @@
           <div class="efeito-ponto"><img src="fim.jpg" alt="" /></div>
           <div class="onda-agua" id="onda3"></div>
         </div>
+        <div class="ponto-jornada ponto-4" id="ponto4">
+          <div class="efeito-ponto"><img src="conclusão.jpg" alt="" /></div>
+          <div class="onda-agua" id="onda4"></div>
+        </div>
       </div>
       <div class="sob" id="overlay"></div>
       <div class="page-bg">
@@ -758,9 +766,11 @@
         const ponto1 = document.getElementById("ponto1");
         const ponto2 = document.getElementById("ponto2");
         const ponto3 = document.getElementById("ponto3");
+        const ponto4 = document.getElementById("ponto4");
         const onda1 = document.getElementById("onda1");
         const onda2 = document.getElementById("onda2");
         const onda3 = document.getElementById("onda3");
+        const onda4 = document.getElementById("onda4");
 
         let soundPlaying = false;
 
@@ -781,7 +791,7 @@
           progressoCaminho.style.height = `${scrollPercentage * 100}%`;
 
           // 3. Ativa os pontos da jornada com base na rolagem
-          if (scrollPercentage >= 0.03) {
+          if (scrollPercentage >= 0.01) {
             ponto1.classList.add("ativo");
             onda1.style.opacity = "1";
           } else {
@@ -803,6 +813,13 @@
           } else {
             ponto3.classList.remove("ativo");
             onda3.style.opacity = "0";
+          }
+          if (scrollPercentage >= 0.99) {
+            ponto4.classList.add("ativo");
+            onda4.style.opacity = "1";
+          } else {
+            ponto4.classList.remove("ativo");
+            onda4.style.opacity = "0";
           }
         });
 
