@@ -765,173 +765,182 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Sempre mostra o formulário de login quando a página é carregada
-        document.getElementById("login-container").style.display = "block";
-        document.getElementById("conteudo").style.display = "none";
+  // Sempre mostra o formulário de login quando a página é carregada
+  document.getElementById("login-container").style.display = "block";
+  document.getElementById("conteudo").style.display = "none";
 
-        document
-          .getElementById("login-form")
-          .addEventListener("submit", function (event) {
-            event.preventDefault();
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
 
-            // Captura os valores digitados
-            const usuario = document.getElementById("usuario").value;
-            const senha = document.getElementById("senha").value;
+      const usuario = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
 
-            // Verifica se o usuário e a senha são corretos
-            if (usuario === "sol" && senha === "oceano") {
-              // Exibe o conteúdo e oculta o formulário de login
-              document.getElementById("login-container").style.display = "none";
-              document.getElementById("conteudo").style.display = "block";
-            } else {
-              alert("Usuário ou senha incorretos!"); // Exibe mensagem de erro
-            }
-          });
-      });
+      // URL da sua API no Render
+      const apiUrl = "https://backendapi-5uod.onrender.com/login";
 
-      function logout() {
-        // Para logout, só exibe novamente o formulário de login
-        document.getElementById("login-container").style.display = "block";
-        document.getElementById("conteudo").style.display = "none";
-      }
-      function splitImage() {
-        document.querySelector(".intro").classList.add("remove");
-        document.querySelector(".dive-button").classList.add("remove");
-        document.getElementById("txt").classList.add("show");
-        document.querySelector(".caminho-jornada").classList.add("show");
-        document.querySelector(".sound-control").classList.add("show");
-
-        // Iniciar os sons quando o botão DIVE IN for clicado
-        const audio = document.getElementById("backgroundAudio");
-        const newSound = document.getElementById("newSound");
-        const soundOnIcon = document.getElementById("soundOnIcon");
-        const soundOffIcon = document.getElementById("soundOffIcon");
-
-        // Configurar o volume
-        audio.volume = 0.3;
-        newSound.volume = 0.5;
-
-        // Tocar os sons
-        audio
-          .play()
-          .then(() => {
-            soundPlaying = true;
-            soundOnIcon.style.display = "block";
-            soundOffIcon.style.display = "none";
-          })
-          .catch((e) => console.log("Erro ao tocar áudio:", e));
-
-        newSound
-          .play()
-          .then(() => {
-            soundPlaying = true;
-            soundOnIcon.style.display = "block";
-            soundOffIcon.style.display = "none";
-          })
-          .catch((e) => console.log("Erro ao tocar áudio:", e));
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const textContainer = document.getElementById("textContainer");
-        const overlay = document.getElementById("overlay");
-        const audio = document.getElementById("backgroundAudio");
-        const newSound = document.getElementById("newSound");
-        const soundToggle = document.getElementById("soundToggle");
-        const soundOnIcon = document.getElementById("soundOnIcon");
-        const soundOffIcon = document.getElementById("soundOffIcon");
-
-        // Elementos do caminho da jornada
-        const progressoCaminho = document.getElementById("progressoCaminho");
-        const ponto1 = document.getElementById("ponto1");
-        const ponto2 = document.getElementById("ponto2");
-        const ponto3 = document.getElementById("ponto3");
-        const ponto4 = document.getElementById("ponto4");
-        const onda1 = document.getElementById("onda1");
-        const onda2 = document.getElementById("onda2");
-        const onda3 = document.getElementById("onda3");
-        const onda4 = document.getElementById("onda4");
-
-        let soundPlaying = false;
-
-        // Função para calcular a posição máxima de rolagem
-        const getMaxScroll = () =>
-          textContainer.scrollHeight - textContainer.clientHeight;
-
-        // Listener de rolagem para múltiplos efeitos
-        textContainer.addEventListener("scroll", function () {
-          // Calcula a porcentagem atual de rolagem
-          const scrollPercentage = textContainer.scrollTop / getMaxScroll();
-
-          // 1. Atualiza o overlay com base na rolagem
-          const opacity = Math.min(scrollPercentage * 0.8, 0.7);
-          overlay.style.background = `rgba(0, 0, 0, ${opacity})`;
-
-          // 2. Atualiza o progresso do caminho
-          progressoCaminho.style.height = `${scrollPercentage * 100}%`;
-
-          // 3. Ativa os pontos da jornada com base na rolagem
-          if (scrollPercentage >= 0.01) {
-            ponto1.classList.add("ativo");
-            onda1.style.opacity = "1";
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          if (usuario === data.usuario && senha === data.senha) {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("conteudo").style.display = "block";
           } else {
-            ponto1.classList.remove("ativo");
-            onda1.style.opacity = "0";
+            alert("Usuário ou senha incorretos!");
           }
-
-          if (scrollPercentage >= 0.33) {
-            ponto2.classList.add("ativo");
-            onda2.style.opacity = "1";
-          } else {
-            ponto2.classList.remove("ativo");
-            onda2.style.opacity = "0";
-          }
-
-          if (scrollPercentage >= 0.66) {
-            ponto3.classList.add("ativo");
-            onda3.style.opacity = "1";
-          } else {
-            ponto3.classList.remove("ativo");
-            onda3.style.opacity = "0";
-          }
-          if (scrollPercentage >= 0.99) {
-            ponto4.classList.add("ativo");
-            onda4.style.opacity = "1";
-          } else {
-            ponto4.classList.remove("ativo");
-            onda4.style.opacity = "0";
-          }
+        })
+        .catch((error) => {
+          console.error("Erro ao acessar a API:", error);
+          alert("Erro ao verificar o login. Tente novamente.");
         });
+    });
+});
 
-        // Controle de som
-        soundToggle.addEventListener("click", function () {
-          if (soundPlaying) {
-            audio.pause();
-            soundOnIcon.style.display = "none";
-            soundOffIcon.style.display = "block";
-          } else {
-            audio.play().catch((e) => console.log("Erro ao tocar áudio:", e));
-            soundOnIcon.style.display = "block";
-            soundOffIcon.style.display = "none";
-          }
-          soundPlaying = !soundPlaying;
-        });
+function logout() {
+  // Para logout, só exibe novamente o formulário de login
+  document.getElementById("login-container").style.display = "block";
+  document.getElementById("conteudo").style.display = "none";
+}
 
-        // Removido o event listener para iniciar o som com qualquer clique na página
-      });
+function splitImage() {
+  document.querySelector(".intro").classList.add("remove");
+  document.querySelector(".dive-button").classList.add("remove");
+  document.getElementById("txt").classList.add("show");
+  document.querySelector(".caminho-jornada").classList.add("show");
+  document.querySelector(".sound-control").classList.add("show");
 
-      const video = document.getElementById("meuVideo");
-      const maxLoops = 3;
+  // Iniciar os sons quando o botão DIVE IN for clicado
+  const audio = document.getElementById("backgroundAudio");
+  const newSound = document.getElementById("newSound");
+  const soundOnIcon = document.getElementById("soundOnIcon");
+  const soundOffIcon = document.getElementById("soundOffIcon");
 
-      for (let i = 0; i < maxLoops; i++) {
-        video.addEventListener(
-          "ended",
-          () => {
-            video.currentTime = 0;
-            video.play();
-          },
-          { once: true }
-        );
-      }
+  // Configurar o volume
+  audio.volume = 0.3;
+  newSound.volume = 0.5;
+
+  // Tocar os sons
+  audio
+    .play()
+    .then(() => {
+      soundPlaying = true;
+      soundOnIcon.style.display = "block";
+      soundOffIcon.style.display = "none";
+    })
+    .catch((e) => console.log("Erro ao tocar áudio:", e));
+
+  newSound
+    .play()
+    .then(() => {
+      soundPlaying = true;
+      soundOnIcon.style.display = "block";
+      soundOffIcon.style.display = "none";
+    })
+    .catch((e) => console.log("Erro ao tocar áudio:", e));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const textContainer = document.getElementById("textContainer");
+  const overlay = document.getElementById("overlay");
+  const audio = document.getElementById("backgroundAudio");
+  const newSound = document.getElementById("newSound");
+  const soundToggle = document.getElementById("soundToggle");
+  const soundOnIcon = document.getElementById("soundOnIcon");
+  const soundOffIcon = document.getElementById("soundOffIcon");
+
+  // Elementos do caminho da jornada
+  const progressoCaminho = document.getElementById("progressoCaminho");
+  const ponto1 = document.getElementById("ponto1");
+  const ponto2 = document.getElementById("ponto2");
+  const ponto3 = document.getElementById("ponto3");
+  const ponto4 = document.getElementById("ponto4");
+  const onda1 = document.getElementById("onda1");
+  const onda2 = document.getElementById("onda2");
+  const onda3 = document.getElementById("onda3");
+  const onda4 = document.getElementById("onda4");
+
+  let soundPlaying = false;
+
+  // Função para calcular a posição máxima de rolagem
+  const getMaxScroll = () =>
+    textContainer.scrollHeight - textContainer.clientHeight;
+
+  // Listener de rolagem para múltiplos efeitos
+  textContainer.addEventListener("scroll", function () {
+    // Calcula a porcentagem atual de rolagem
+    const scrollPercentage = textContainer.scrollTop / getMaxScroll();
+
+    // 1. Atualiza o overlay com base na rolagem
+    const opacity = Math.min(scrollPercentage * 0.8, 0.7);
+    overlay.style.background = `rgba(0, 0, 0, ${opacity})`;
+
+    // 2. Atualiza o progresso do caminho
+    progressoCaminho.style.height = `${scrollPercentage * 100}%`;
+
+    // 3. Ativa os pontos da jornada com base na rolagem
+    if (scrollPercentage >= 0.01) {
+      ponto1.classList.add("ativo");
+      onda1.style.opacity = "1";
+    } else {
+      ponto1.classList.remove("ativo");
+      onda1.style.opacity = "0";
+    }
+
+    if (scrollPercentage >= 0.33) {
+      ponto2.classList.add("ativo");
+      onda2.style.opacity = "1";
+    } else {
+      ponto2.classList.remove("ativo");
+      onda2.style.opacity = "0";
+    }
+
+    if (scrollPercentage >= 0.66) {
+      ponto3.classList.add("ativo");
+      onda3.style.opacity = "1";
+    } else {
+      ponto3.classList.remove("ativo");
+      onda3.style.opacity = "0";
+    }
+    if (scrollPercentage >= 0.99) {
+      ponto4.classList.add("ativo");
+      onda4.style.opacity = "1";
+    } else {
+      ponto4.classList.remove("ativo");
+      onda4.style.opacity = "0";
+    }
+  });
+
+  // Controle de som
+  soundToggle.addEventListener("click", function () {
+    if (soundPlaying) {
+      audio.pause();
+      soundOnIcon.style.display = "none";
+      soundOffIcon.style.display = "block";
+    } else {
+      audio.play().catch((e) => console.log("Erro ao tocar áudio:", e));
+      soundOnIcon.style.display = "block";
+      soundOffIcon.style.display = "none";
+    }
+    soundPlaying = !soundPlaying;
+  });
+
+  // Removido o event listener para iniciar o som com qualquer clique na página
+});
+
+const video = document.getElementById("meuVideo");
+const maxLoops = 3;
+
+for (let i = 0; i < maxLoops; i++) {
+  video.addEventListener(
+    "ended",
+    () => {
+      video.currentTime = 0;
+      video.play();
+    },
+    { once: true }
+  );
+}
     </script>
   </body>
 </html>
